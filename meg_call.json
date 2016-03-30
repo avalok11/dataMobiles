@@ -1,0 +1,78 @@
+{
+    "dimensions": [
+	{
+		"name":"users_",
+		"label":"User Phone", 
+		"attributes":["name","phone_number"]
+	},
+	{
+		"name":"directions_", "label":"Direction Call",
+	       	"levels":[
+		       	{ "name":"own","label":"Megafon / Other Operators" },
+			{ "name":"operator","label":"Operator" },
+			{ "name":"direction","label":"Phones 4 digits" }
+		]
+	},
+	{
+		"name":"service_", "label":"Service Type", "attributes":["id","servicetype"]
+	},
+	{
+		"name":"region_","label":"Region",
+		"levels":[
+			{ "name":"region","label":"Region" },
+			{ "name":"location","label":"Detailed Location" }
+		]
+	},
+        {
+		"name":"dates", 
+		"label":"Date", 
+		"role":"time",
+		"levels":[
+			{"name":"year","label":"Year"},
+			{"name":"month","label":"Month"},
+			{"name":"day","label":"Day"},
+			{"name":"hour","label":"Hour"}
+		],
+		"hierarchies": [
+			{
+				"name":"daily",
+				"label":"Daily",
+				"levels":["year","month","day"]
+			},
+			{
+				"name":"hourly",
+				"label":"Hourly",
+				"levels":["hour"]
+			}
+		]
+	}
+    ],
+    "cubes": [
+        {
+            "name": "call",
+	    "label":"Mobile Phone Calls",
+            "dimensions": ["users_", "directions_", "service_", "region_","dates"],
+            "measures": [
+                {"name":"minutes", "label":"Minutes"},
+		{"name":"cost","label":"Cost rub"}
+            		],
+	    "joins":[
+		    {"master":"service_id","detail":"service_.id"},
+		    {"master":"user_id","detail":"users_.id"},
+		    {"master":"region_id","detail":"region_.id"},
+		    {"master":"direction_id","detail":"directions_.id"}
+	    	    ],
+            "aggregates": [
+                    { "name": "amount_sum", "function": "sum", "measure": "minutes" },
+                    { "name": "record_count", "function": "count" },
+		    { "name": "amount_cost", "function":"sum", "measure": "cost"}
+                	], 
+	    "mappings": {
+		    "dates.year": {"column":"date","extract":"year"},
+		    "dates.month": {"column":"date","extract":"month"},
+		    "dates.day": {"column":"date","extract":"day"},
+		    "dates.hour": {"column":"time","extract":"hour"}
+	    		}
+	}
+    ]
+}

@@ -1,0 +1,175 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# 01. ask for file name, open it and save to variable
+#
+#
+#
+#
+#
+
+import re
+
+
+def transliterate(string):
+  capital_letters = {u'А': u'A',
+                     u'Б': u'B',
+                     u'В': u'V',
+                     u'Г': u'G',
+                     u'Д': u'D',
+                     u'Е': u'E',
+                     u'Ё': u'E',
+                     u'З': u'Z',
+                     u'И': u'I',
+                     u'Й': u'Y',
+                     u'К': u'K',
+                     u'Л': u'L',
+                     u'М': u'M',
+                     u'Н': u'N',
+                     u'О': u'O',
+                     u'П': u'P',
+                     u'Р': u'R',
+                     u'С': u'S',
+                     u'Т': u'T',
+                     u'У': u'U',
+                     u'Ф': u'F',
+                     u'Х': u'H',
+                     u'Ъ': u'',
+                     u'Ы': u'Y',
+                     u'Ь': u'',
+                     u'Э': u'E'}
+
+  capital_letters_transliterated_to_multiple_letters = {u'Ж': u'Zh',
+                                                        u'Ц': u'Ts',
+                                                        u'Ч': u'Ch',
+                                                        u'Ш': u'Sh',
+                                                        u'Щ': u'Sch',
+                                                        u'Ю': u'Yu',
+                                                        u'Я': u'Ya'}
+  lower_case_letters = {u'а': u'a',
+                        u'б': u'b',
+                        u'в': u'v',
+                        u'г': u'g',
+                        u'д': u'd',
+                        u'е': u'e',
+                        u'ё': u'e',
+                        u'ж': u'zh',
+                        u'з': u'z',
+                        u'и': u'i',
+                        u'й': u'y',
+                        u'к': u'k',
+                        u'л': u'l',
+                        u'м': u'm',
+                        u'н': u'n',
+                        u'о': u'o',
+                        u'п': u'p',
+                        u'р': u'r',
+                        u'с': u's',
+                        u'т': u't',
+                        u'у': u'u',
+                        u'ф': u'f',
+                        u'х': u'h',
+                        u'ц': u'ts',
+                        u'ч': u'ch',
+                        u'ш': u'sh',
+                        u'щ': u'sch',
+                        u'ъ': u'',
+                        u'ы': u'y',
+                        u'ь': u'',
+                        u'э': u'e',
+                        u'ю': u'yu',
+                        u'я': u'ya'}
+  capital_and_lower_case_letter_pairs = {}
+
+  for capital_letter, capital_letter_translit in capital_letters_transliterated_to_multiple_letters.iteritems():
+    for lowercase_letter, lowercase_letter_translit in lower_case_letters.iteritems():
+      capital_and_lower_case_letter_pairs[u"%s%s" % (capital_letter, lowercase_letter)] = u"%s%s" % (capital_letter_translit, lowercase_letter_translit)
+
+  for dictionary in (capital_and_lower_case_letter_pairs, capital_letters, lower_case_letters):
+    for cyrillic_string, latin_string in dictionary.iteritems():
+      string = string.replace(cyrillic_string, latin_string)
+
+  for cyrillic_string, latin_string in capital_letters_transliterated_to_multiple_letters.iteritems():
+    string = string.replace(cyrillic_string, latin_string.upper())
+
+  return string
+
+
+# ask for file name to read
+def main():
+  filename = raw_input("Enter the file name: ")
+  if len(filename) < 3: filename = "januar-cp.csv"
+
+
+# try open the file
+  try:
+    fh = open(filename)
+  except:
+    print "File not found: ", filename
+    exit()
+
+# create a new file (in this file will be saved our correct formated data
+  new_file = open("meg_new.txt", 'w')
+
+
+# look for phone number
+# regular expression to finde the phone number - "Детализация оказанных услуг по Абонентскому номеру  +79113083788";;;;;;;;;;;;;
+  reg_phone = re.compile(r'^\".+\s{2}\+(\d+)\";{13}')
+# regular expression for real CSV - "01.12.15";;;"00:17:14";;"IN......
+  csv_line = re.compile(r'^\"\d\d\.\d\d\.\d\d\".+')
+# regular expression to delete -  "
+  reg_quot = re.compile(r'"')
+# regular expression to modife 8812 to 7812 etc"
+  reg_eight = re.compile(r'(\d\d;;)8(\d+;)')
+# reg expr to modife "ten phone number to first 3 + '7'" - 9219560457 to 7921
+  reg_9_7 = re.compile(r'(\d\d;;)(\d{10};)')
+# replace 10 digits in number to first 4 digits so: 79219560457 -> 7921,
+# pattern for this:
+  reg_4our = re.compile(r'(\d\d;;)(\d{4})(\d{7};)')
+
+# start parsing the file
+# first we need to find the user phone number "Детализация оказанных услуг по  Абонентскому номеру  +79113083788";;;;;;;;;;;;;
+# then we will save the phone user number into variable "phone"
+# ========
+  for line in fh:
+    phone = reg_phone.search(line)
+    if phone:
+# remeber phone number to put it in CSV new file
+      current_phone = phone.group(1)
+# print phone.group(1)
+# =======
+
+# find where real CSV start - "01.12.15";;;"00:17:14";;"IN
+    csv = csv_line.search(line)
+# if we catch it -> split to list and put there fucking remebered phone number
+# remove \n in the end of string
+    if csv:
+      newline = csv.group().rstrip()
+# remove " from string
+      nnline = reg_quot.sub('', newline)
+# change the 8 to 7 in phone number здесь я убил кучу времени, чтоб найти одну
+# цифру и заменить ее на другую
+      nnline1 = reg_eight.sub(r'\g<1>7\g<2>', nnline, count=1)
+
+      nnline2 = reg_9_7.sub(r'\g<1>7\g<2>', nnline1, count=1)
+
+      nnline3 = reg_4our.sub(r'\g<1>\g<2>\g<3>\g<2>;', nnline2, count=1)
+
+# modify line to array/list
+      newline = nnline3.split(';')
+# add current phone number to array
+      newline[1] = current_phone
+
+# create string to put it in new file
+      new_string = ""
+      for l in newline:
+        new_string = new_string + l + ";"
+
+      new_file.write(new_string+"\n")
+      #print new_string
+
+  fh.close()
+  new_file.close()
+
+
+if __name__ == '__main__':
+    main()
