@@ -1,0 +1,2 @@
+01. convert toMegafon file to correct encoding# iconv -f CP1251 -t UTF8 februar.csv > februar-cp.csv 
+03. copy converted RAW data to folder 02_

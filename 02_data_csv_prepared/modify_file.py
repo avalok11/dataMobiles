@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # 01. ask for file name, open it and save to variable
-#
-#
-#
-#
-#
 
 import re
+import datetime
+
 
 
 def userphone():
@@ -18,35 +15,42 @@ def userphone():
   csv_line = re.compile(r'^\"\d\d\.\d\d\.\d\d\".+')
 # regular expression to delete -  "
   reg_quot = re.compile(r'"')
-  return [reg_phone,csv_line,reg_quot]
+  return [reg_phone,csv_line, reg_quot]
 
 # function to bring phone number (direction) to common view
 # it shuld be 11 digits and start with 7
 # function also determine the phone PREFIX and save it in arrary position [7]
+# convert the date format from dd.mm.yy to yyyy.mm.dd
 def preparecallstring(newline):
   shortnum=''
+  newline[0]=datetime.datetime.strptime(newline[0],"%d.%m.%y").strftime("%Y-%m-%d")
   try:
     b=int(newline[5])
-    if len(newline[5])==10: newline[5] = '7' + newline[5]
-    if len(newline[5])==11 and newline[5][0]=='8':
-      string = list(newline[5])
-      string[0] = '7'
-      newline[5] = ''.join(string)
-      print "NEW LINE", newline[5]
-    if "Секунда"==newline[8]:
-      print newline[5], newline[8]
-      newline[6]=str(int(newline[6])/60.0)
+#    if len(newline[5])==10: newline[5] = '7' + newline[5]
     if len(newline[5])==11:
+      string = list(newline[5])
+      del string[0]
+      newline[5] = ''.join(string)
+      #print "NEW LINE", newline[5]
+    if "Секунда"==newline[8]:
+      #print newline[5], newline[8]
+      newline[6]=str(int(newline[6])/60.0)
+    if len(newline[5])>=11:
+      if newline[5][0:2]=='00':
+        string = list(newline[5])
+        del string[0:2]
+        newline[5] = ''.join(string)
       shortnum = newline[5][0:4]
     else:
+      #переставить выше и сначала приамбулу дописать а потом определять оператора и регион и три цифры оператора
       if newline[10]=="Мурманск":
-        shortnum = str(78152)
+        shortnum = str(8152)
       elif newline[10]=="Столичный фил. ПАОМегаФон":
-        shortnum = str(7495)
+        shortnum = str(495)
       elif newline[10]=="Санкт-Петербург":
-        shortnum = str(7812)
+        shortnum = str(812)
       else: shortnum = str(0000)
-    newline[7]=shortnum
+    #newline[7]=shortnum
     if len(newline[5]) < 8: newline[5]=shortnum+newline[5]
   except:
     True
@@ -60,7 +64,7 @@ def main():
   if len(filename) < 3: filename = "januar-cp.csv"
 
 # 02 try open the file
-# create a new file (in this file will be saved our correct formated data
+# create a new file (in this file will be saved our correct formatted data
   try:
     fh = open(filename)
     new_file = open("meg_new.txt", 'w')
@@ -68,7 +72,7 @@ def main():
     print "File not found: ", filename
     exit()
 
-# 03 determine userphon, real csv line and quots
+# 03 determine userphone, real csv line and quotes
   reg_phone = userphone()[0]
   csv_line = userphone()[1]
   reg_quot = userphone()[2]
@@ -85,8 +89,8 @@ def main():
 # clean the line:
 # - remove \n in the end of string
 # - remove quotas "
-# - splite line to ARRAY - > newline
-# - add owner phone numebr to array
+# - split line to ARRAY - > newline
+# - add owner phone number to array
     if csv_line.search(line):
       newline = line.rstrip()
       newline = reg_quot.sub('', newline)
