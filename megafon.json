@@ -8,9 +8,10 @@
 	{
 		"name":"directions_", "label":"Direction Call",
 	       	"levels":[
-		       	{ "name":"own","label":"Megafon / Other Operators" },
-			{ "name":"operator","label":"Operator" },
-			{ "name":"direction","label":"Phones 4 digits" }
+		       	{ "name":"region","label":"Регион" },
+			{ "name":"operator","label":"Оператор" },
+			{ "name":"digits3","label":"Phones 4 digits" },
+			{ "name":"phone_num","label":"Номер телефона" }
 		]
 	},
 	{
@@ -25,7 +26,7 @@
 	},
         {
 		"name":"dates", 
-		"label":"Date", 
+		"label":"Date/Hour", 
 		"role":"time",
 		"levels":[
 			{"name":"year","label":"Year"},
@@ -49,18 +50,18 @@
     ],
     "cubes": [
         {
-            "name": "call",
-	    "label":"Mobile Phone TEST",
+            "name": "call_",
+	    "label":"Mobile Phone Calls",
             "dimensions": ["users_", "directions_", "service_", "region_","dates"],
             "measures": [
                 {"name":"minutes", "label":"Minutes"},
 		{"name":"cost","label":"Cost rub"}
             		],
 	    "joins":[
-		    {"master":"service_id","detail":"service_.id"},
-		    {"master":"user_id","detail":"users_.id"},
+		    {"master":"services_id","detail":"service_.id"},
+		    {"master":"users_id","detail":"users_.id"},
 		    {"master":"region_id","detail":"region_.id"},
-		    {"master":"direction_id","detail":"directions_.id"}
+		    {"master":"directions_id","detail":"directions_.id"}
 	    	    ],
             "aggregates": [
                     { "name": "amount_sum", "function": "sum", "measure": "minutes" },
@@ -71,7 +72,7 @@
 		    "dates.year": {"column":"date","extract":"year"},
 		    "dates.month": {"column":"date","extract":"month"},
 		    "dates.day": {"column":"date","extract":"day"},
-		    "dates.hour": {"column":"time","extract":"hour"}
+		    "dates.hour": {"column":"time"}
 	    		}
 	}
     ]

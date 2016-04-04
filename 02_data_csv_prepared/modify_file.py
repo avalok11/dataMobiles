@@ -24,6 +24,7 @@ def userphone():
 def preparecallstring(newline):
   shortnum=''
   newline[0]=datetime.datetime.strptime(newline[0],"%d.%m.%y").strftime("%Y-%m-%d")
+  newline[3]=datetime.datetime.strptime(newline[3],"%H:%M:%S").strftime("%H:00")
   try:
     b=int(newline[5])
 #    if len(newline[5])==10: newline[5] = '7' + newline[5]
