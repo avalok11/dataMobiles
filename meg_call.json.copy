@@ -23,10 +23,6 @@
 			{ "name":"location","label":"Detailed Location" }
 		]
 	},
-	{
-		"name":"hourly",
-		"label":"Hourly"
-	},
         {
 		"name":"dates", 
 		"label":"Date", 
@@ -34,13 +30,19 @@
 		"levels":[
 			{"name":"year","label":"Year"},
 			{"name":"month","label":"Month"},
-			{"name":"day","label":"Day"}
+			{"name":"day","label":"Day"},
+			{"name":"hour","label":"Hour"}
 		],
 		"hierarchies": [
 			{
 				"name":"daily",
 				"label":"Daily",
 				"levels":["year","month","day"]
+			},
+			{
+				"name":"hourly",
+				"label":"Hourly",
+				"levels":["hour"]
 			}
 		]
 	}
@@ -49,7 +51,7 @@
         {
             "name": "call",
 	    "label":"Mobile Phone TEST",
-            "dimensions": ["users_", "directions_", "service_", "region_","dates","hourly"],
+            "dimensions": ["users_", "directions_", "service_", "region_","dates"],
             "measures": [
                 {"name":"minutes", "label":"Minutes"},
 		{"name":"cost","label":"Cost rub"}
@@ -69,7 +71,7 @@
 		    "dates.year": {"column":"date","extract":"year"},
 		    "dates.month": {"column":"date","extract":"month"},
 		    "dates.day": {"column":"date","extract":"day"},
-		    "dates.hour": {"column":"time"}
+		    "dates.hour": {"column":"time","extract":"hour"}
 	    		}
 	}
     ]

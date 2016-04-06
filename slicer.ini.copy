@@ -1,0 +1,25 @@
+[workspace]
+log_level: info
+
+[server]
+allow_cors_origin: *
+host: localhost
+port: 5001
+reload: yes
+prettyprint: yes
+
+[store test]
+type: sql
+url: sqlite:///megafon.db
+model = meg_call.json
+
+[store]
+type: sql
+url: sqlite:///meg_call.db
+model = megafon.json
+
+[models]
+#call = meg_call.json
+#megafon_call = megafon.json
+#sms = meg_sms.json
+

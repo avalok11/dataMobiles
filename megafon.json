@@ -3,7 +3,7 @@
 	{
 		"name":"users_",
 		"label":"User Phone", 
-		"attributes":["name","phone_number"]
+		"attributes":["id","phone_number","name"]
 	},
 	{
 		"name":"directions_", "label":"Direction Call",
@@ -32,6 +32,7 @@
 			{"name":"year","label":"Year"},
 			{"name":"month","label":"Month"},
 			{"name":"day","label":"Day"},
+			{"name":"dweek","label":"DaayOfWeek"},
 			{"name":"hour","label":"Hour"}
 		],
 		"hierarchies": [
@@ -39,6 +40,11 @@
 				"name":"daily",
 				"label":"Daily",
 				"levels":["year","month","day"]
+			},
+			{
+				"name":"dweek",
+				"label":"Day Of Week",
+				"levels":["dweek"]
 			},
 			{
 				"name":"hourly",
@@ -72,7 +78,8 @@
 		    "dates.year": {"column":"date","extract":"year"},
 		    "dates.month": {"column":"date","extract":"month"},
 		    "dates.day": {"column":"date","extract":"day"},
-		    "dates.hour": {"column":"time"}
+		    "dates.dweek": {"column":"date","extract":"dow"},
+		    "dates.hour": {"column":"time","extract":"hour"}
 	    		}
 	}
     ]
